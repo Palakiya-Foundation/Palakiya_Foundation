@@ -5,7 +5,7 @@ Built with **React (Vite)** + **Tailwind CSS** on the frontend and **Node.js / E
 
 ---
 
-## âœ¨ Features
+##  Features
 
 ### Public Website
 - **Home**   animated hero, live impact counters, featured programs, testimonials, latest articles, CTA
