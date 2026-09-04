@@ -2,6 +2,7 @@ import { validationResult } from 'express-validator';
 import prisma from '../config/prisma.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import { uniqueSlug } from '../utils/slug.js';
+import { resolveImageValue } from '../utils/media.js';
 
 const validate = (req, res) => {
   const errors = validationResult(req);
@@ -38,6 +39,7 @@ export const getProgram = asyncHandler(async (req, res) => {
 export const createProgram = asyncHandler(async (req, res) => {
   if (!validate(req, res)) return;
   const { title, summary, description, category, icon, featured, order, image } = req.body;
+  const imageValue = resolveImageValue(req, 'image');
 
   const slug = await uniqueSlug(prisma.program, title);
   const program = await prisma.program.create({
@@ -50,7 +52,7 @@ export const createProgram = asyncHandler(async (req, res) => {
       icon: icon || 'HeartHandshake',
       featured: Boolean(featured),
       order: Number(order) || 0,
-      image: req.file ? `/uploads/${req.file.filename}` : image || null,
+      image: imageValue ?? image ?? null,
     },
   });
   res.status(201).json(program);
@@ -76,8 +78,8 @@ export const updateProgram = asyncHandler(async (req, res) => {
     data.title = title;
     data.slug = await uniqueSlug(prisma.program, title, id);
   }
-  if (req.file) data.image = `/uploads/${req.file.filename}`;
-  else if (image !== undefined) data.image = image;
+  const imageValue = resolveImageValue(req, 'image');
+  if (imageValue !== undefined) data.image = imageValue;
 
   const program = await prisma.program.update({ where: { id }, data });
   res.json(program);

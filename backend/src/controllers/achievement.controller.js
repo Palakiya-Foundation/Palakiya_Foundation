@@ -1,6 +1,7 @@
 import { validationResult } from 'express-validator';
 import prisma from '../config/prisma.js';
 import asyncHandler from '../utils/asyncHandler.js';
+import { resolveImageValue } from '../utils/media.js';
 
 const validate = (req, res) => {
   const errors = validationResult(req);
@@ -23,12 +24,13 @@ export const getAchievements = asyncHandler(async (req, res) => {
 export const createAchievement = asyncHandler(async (req, res) => {
   if (!validate(req, res)) return;
   const { title, description, image } = req.body;
+  const imageValue = resolveImageValue(req, 'image');
 
   const achievement = await prisma.achievement.create({
     data: {
       title,
       description,
-      image: req.file ? `/uploads/${req.file.filename}` : image || null,
+      image: imageValue ?? image ?? null,
     },
   });
   res.status(201).json(achievement);
@@ -43,8 +45,8 @@ export const updateAchievement = asyncHandler(async (req, res) => {
 
   const { title, description, image } = req.body;
   const data = { title, description };
-  if (req.file) data.image = `/uploads/${req.file.filename}`;
-  else if (image !== undefined) data.image = image || null;
+  const imageValue = resolveImageValue(req, 'image');
+  if (imageValue !== undefined) data.image = imageValue;
 
   const achievement = await prisma.achievement.update({ where: { id }, data });
   res.json(achievement);

@@ -1,22 +1,59 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Upload, Link2, ImageIcon } from 'lucide-react';
 
 // Image input supporting either file upload or pasted URL.
 // Calls onChange({ file, url }) — only one will be set.
 const ImageField = ({ label = 'Image', value, onChange }) => {
-  const [mode, setMode] = useState('url'); // 'url' | 'file'
+  const [mode, setMode] = useState(value?.startsWith('http') ? 'url' : 'file');
   const [preview, setPreview] = useState(value || '');
+  const [urlValue, setUrlValue] = useState(value?.startsWith('http') ? value : '');
+  const [error, setError] = useState('');
   const fileRef = useRef(null);
+  const selectedFileRef = useRef(null);
+
+  useEffect(() => {
+    setMode(value?.startsWith('http') ? 'url' : 'file');
+    if (value) {
+      selectedFileRef.current = null;
+      setPreview(value);
+    } else if (!selectedFileRef.current) {
+      setPreview('');
+    }
+    setUrlValue(value?.startsWith('http') ? value : '');
+  }, [value]);
 
   const handleFile = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      setError('Please choose an image file');
+      e.target.value = '';
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Image must be 5MB or smaller');
+      e.target.value = '';
+      return;
+    }
+    setError('');
+    selectedFileRef.current = file;
     setPreview(URL.createObjectURL(file));
     onChange({ file, url: '' });
   };
 
   const handleUrl = (e) => {
     const url = e.target.value;
+    const valid = !url || (() => {
+      try {
+        const parsed = new URL(url);
+        return ['http:', 'https:'].includes(parsed.protocol);
+      } catch {
+        return false;
+      }
+    })();
+    setError(valid ? '' : 'Enter a valid http(s) image URL');
+    selectedFileRef.current = null;
+    setUrlValue(url);
     setPreview(url);
     onChange({ file: null, url });
   };
@@ -48,8 +85,9 @@ const ImageField = ({ label = 'Image', value, onChange }) => {
       {mode === 'url' ? (
         <input
           type="url"
-          defaultValue={value?.startsWith('http') ? value : ''}
+          value={urlValue}
           onChange={handleUrl}
+          aria-invalid={!!error}
           className="input"
           placeholder="https://images.unsplash.com/..."
         />
@@ -60,9 +98,16 @@ const ImageField = ({ label = 'Image', value, onChange }) => {
           className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-ink-200 py-6 text-sm font-semibold text-ink-500 transition hover:border-brand-400 hover:text-brand-600"
         >
           <Upload size={18} /> Choose an image (max 5MB)
-          <input ref={fileRef} type="file" accept="image/*" onChange={handleFile} className="hidden" />
         </button>
       )}
+
+      <input
+        ref={fileRef}
+        type="file"
+        accept="image/*"
+        onChange={handleFile}
+        className="hidden"
+      />
 
       {preview ? (
         <img
@@ -75,6 +120,7 @@ const ImageField = ({ label = 'Image', value, onChange }) => {
           <ImageIcon size={28} />
         </div>
       )}
+      {error && <p className="mt-2 text-xs font-semibold text-red-600">{error}</p>}
     </div>
   );
 };

@@ -113,6 +113,11 @@ const groups = [
   },
 ];
 
+const contentImageKeys = groups
+  .flatMap((group) => group.subsections || [])
+  .flatMap((section) => section.fields)
+  .map((field) => field.key);
+
 
 const ManageTestimonialsSection = () => {
 
@@ -378,10 +383,14 @@ const ManageContent = () => {
   const [saving, setSaving] = useState(false);
   const [activeGroup, setActiveGroup] = useState(0);
   const [initialized, setInitialized] = useState(false);
+  const [imageInputs, setImageInputs] = useState({});
 
   useEffect(() => {
     if (!initialized && Object.keys(content).length > 0) {
       setForm(content);
+      setImageInputs(
+        Object.fromEntries(contentImageKeys.map((key) => [key, { file: null, url: content[key] || '' }]))
+      );
       setInitialized(true);
     }
   }, [content, initialized]);
@@ -391,6 +400,9 @@ const ManageContent = () => {
     try {
       const data = await refresh();
       setForm(data);
+      setImageInputs(
+        Object.fromEntries(contentImageKeys.map((key) => [key, { file: null, url: data[key] || '' }]))
+      );
       setInitialized(true);
     } catch {
       // silent — context already keeps stale data
@@ -400,9 +412,25 @@ const ManageContent = () => {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const res = await api.put('/content', form);
+      const data = new FormData();
+      Object.entries(form).forEach(([key, value]) => {
+        if (!contentImageKeys.includes(key)) data.append(key, value ?? '');
+      });
+      contentImageKeys.forEach((key) => {
+        const input = imageInputs[key];
+        if (input?.file instanceof File) {
+          data.append(key, input.file, input.file.name);
+        } else {
+          data.append(key, input?.url || form[key] || '');
+        }
+      });
+
+      const res = await api.put('/content', data);
       // Use the API response directly to update form state
       setForm(res.data);
+      setImageInputs(
+        Object.fromEntries(contentImageKeys.map((key) => [key, { file: null, url: res.data[key] || '' }]))
+      );
       setInitialized(true);
       // Also update the context so other components using useContent() get fresh data
       await refresh();
@@ -412,6 +440,11 @@ const ManageContent = () => {
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleImageChange = (key, input) => {
+    setImageInputs((current) => ({ ...current, [key]: input }));
+    if (!input.file) setForm((current) => ({ ...current, [key]: input.url }));
   };
 
   return (
@@ -478,11 +511,10 @@ const ManageContent = () => {
                               <div className="p-4">
                                 <p className="text-sm font-semibold text-ink-900">{f.label}</p>
                                 {f.description ? <p className="mt-1 text-xs leading-relaxed text-ink-500">{f.description}</p> : null}
-                                <input
-                                  value={form[f.key] || ''}
-                                  onChange={(e) => setForm({ ...form, [f.key]: e.target.value })}
-                                  className="mt-3 w-full rounded-lg border border-ink-200 bg-ink-50 px-3 py-2 text-sm text-ink-700 placeholder:text-ink-300 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
-                                  placeholder="Paste image URL here..."
+                                <ImageField
+                                  label=""
+                                  value={imageInputs[f.key]?.file ? '' : imageInputs[f.key]?.url || form[f.key] || ''}
+                                  onChange={(input) => handleImageChange(f.key, input)}
                                 />
                               </div>
                             </div>
@@ -512,11 +544,10 @@ const ManageContent = () => {
                         <div className="p-4">
                           <p className="text-sm font-semibold text-ink-900">{f.label}</p>
                           {f.description ? <p className="mt-1 text-xs leading-relaxed text-ink-500">{f.description}</p> : null}
-                          <input
-                            value={form[f.key] || ''}
-                            onChange={(e) => setForm({ ...form, [f.key]: e.target.value })}
-                            className="mt-3 w-full rounded-lg border border-ink-200 bg-ink-50 px-3 py-2 text-sm text-ink-700 placeholder:text-ink-300 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
-                            placeholder="Paste image URL here..."
+                          <ImageField
+                            label=""
+                            value={imageInputs[f.key]?.file ? '' : imageInputs[f.key]?.url || form[f.key] || ''}
+                            onChange={(input) => handleImageChange(f.key, input)}
                           />
                         </div>
                       </div>

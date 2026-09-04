@@ -2,6 +2,7 @@ import { validationResult } from 'express-validator';
 import prisma from '../config/prisma.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import { uniqueSlug } from '../utils/slug.js';
+import { resolveImageValue } from '../utils/media.js';
 
 const validate = (req, res) => {
   const errors = validationResult(req);
@@ -77,6 +78,7 @@ export const createArticle = asyncHandler(async (req, res) => {
     }
     return [];
   })();
+  const imageValue = resolveImageValue(req, 'image');
 
   const slug = await uniqueSlug(prisma.article, title);
 
@@ -90,7 +92,7 @@ export const createArticle = asyncHandler(async (req, res) => {
       // keep legacy string for backward compatibility
       author: author || 'NGO Team',
       published: published !== undefined ? Boolean(published) : true,
-      image: req.file ? `/uploads/${req.file.filename}` : image || null,
+      image: imageValue ?? image ?? null,
       driveLink: driveLink || null,
       authors:
         parsedAuthorIds.length > 0
@@ -157,8 +159,8 @@ export const updateArticle = asyncHandler(async (req, res) => {
     data.slug = await uniqueSlug(prisma.article, title, id);
   }
 
-  if (req.file) data.image = `/uploads/${req.file.filename}`;
-  else if (image !== undefined) data.image = image;
+  const imageValue = resolveImageValue(req, 'image');
+  if (imageValue !== undefined) data.image = imageValue;
 
   // Allow clearing the field by sending empty string
   if (driveLink !== undefined) data.driveLink = driveLink || null;

@@ -1,5 +1,6 @@
 import prisma from '../config/prisma.js';
 import asyncHandler from '../utils/asyncHandler.js';
+import { resolveImageValue } from '../utils/media.js';
 
 // GET /api/team
 export const getTeam = asyncHandler(async (req, res) => {
@@ -12,6 +13,7 @@ export const getTeam = asyncHandler(async (req, res) => {
 // POST /api/team (admin)
 export const createTeamMember = asyncHandler(async (req, res) => {
   const { name, role, bio, image, order } = req.body;
+  const imageValue = resolveImageValue(req, 'image');
 
   if (!name || !name.trim()) {
     return res.status(400).json({ message: 'Name is required' });
@@ -23,7 +25,7 @@ export const createTeamMember = asyncHandler(async (req, res) => {
       role: role || null,
       bio: bio || null,
       order: Number(order) || 0,
-      image: req.file ? `/uploads/${req.file.filename}` : image || null,
+      image: imageValue ?? image ?? null,
     },
   });
 
@@ -46,8 +48,8 @@ export const updateTeamMember = asyncHandler(async (req, res) => {
     order: order !== undefined ? Number(order) : existing.order,
   };
 
-  if (req.file) data.image = `/uploads/${req.file.filename}`;
-  else if (image !== undefined) data.image = image || null;
+  const imageValue = resolveImageValue(req, 'image');
+  if (imageValue !== undefined) data.image = imageValue;
 
   const member = await prisma.teamMember.update({ where: { id }, data });
   res.json(member);

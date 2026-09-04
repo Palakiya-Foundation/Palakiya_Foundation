@@ -1,6 +1,7 @@
 import { validationResult } from 'express-validator';
 import prisma from '../config/prisma.js';
 import asyncHandler from '../utils/asyncHandler.js';
+import { resolveImageValue } from '../utils/media.js';
 
 const validate = (req, res) => {
   const errors = validationResult(req);
@@ -16,13 +17,14 @@ export const createAuthor = asyncHandler(async (req, res) => {
   if (!validate(req, res)) return;
 
   const { name, designation, bio } = req.body;
+  const photoValue = resolveImageValue(req, 'photo');
 
   const author = await prisma.author.create({
     data: {
       name,
       designation: designation || null,
       bio: bio || null,
-      photo: req.file ? `/uploads/${req.file.filename}` : (req.body.photo || null),
+      photo: photoValue ?? null,
     },
   });
 
@@ -46,8 +48,8 @@ export const updateAuthor = asyncHandler(async (req, res) => {
     bio: bio !== undefined ? bio || null : existing.bio,
   };
 
-  if (req.file) data.photo = `/uploads/${req.file.filename}`;
-  else if (req.body.photo !== undefined) data.photo = req.body.photo || null;
+  const photoValue = resolveImageValue(req, 'photo');
+  if (photoValue !== undefined) data.photo = photoValue;
 
   const author = await prisma.author.update({ where: { id }, data });
   res.json(author);
