@@ -87,7 +87,19 @@ curl http://127.0.0.1:5000/api/health
 
 Then open your droplet IP in the browser.
 
-## 7. Optional: add a domain
+## 7. Deploy later GitHub changes
+
+After pushing changes to GitHub, run the update script on the droplet. A Git pull alone does not update the ignored Vite `frontend/dist` build served by Nginx.
+
+```bash
+cd /var/www/ngo
+chmod +x scripts/update-digitalocean.sh
+./scripts/update-digitalocean.sh
+```
+
+Then reload the admin page with `Ctrl+Shift+R`.
+
+## 8. Optional: add a domain
 
 If you want a custom domain:
 - point your domain to the droplet IP
