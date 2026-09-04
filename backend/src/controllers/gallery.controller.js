@@ -1,5 +1,6 @@
 import prisma from '../config/prisma.js';
 import asyncHandler from '../utils/asyncHandler.js';
+import { fetchImage, saveCompressedImage } from '../utils/imageProcessor.js';
 
 // GET /api/gallery
 export const getGallery = asyncHandler(async (req, res) => {
@@ -17,17 +18,18 @@ export const getGallery = asyncHandler(async (req, res) => {
 // POST /api/gallery  (image upload OR image URL)
 export const createGalleryImage = asyncHandler(async (req, res) => {
   const { title, category, image } = req.body;
-  const src = req.file ? `/uploads/${req.file.filename}` : image;
+  const input = req.file?.buffer || (image ? await fetchImage(image) : null);
 
-  if (!src) {
+  if (!input) {
     return res.status(400).json({ message: 'An image file or image URL is required' });
   }
+  const filename = await saveCompressedImage(input, req.file?.originalname || title);
 
   const item = await prisma.gallery.create({
     data: {
       title: title || null,
       category: category || 'Events',
-      image: src,
+      image: `/uploads/${filename}`,
     },
   });
   res.status(201).json(item);
@@ -38,8 +40,11 @@ export const updateGalleryImage = asyncHandler(async (req, res) => {
   const id = Number(req.params.id);
   const { title, category, image } = req.body;
   const data = { title, category };
-  if (req.file) data.image = `/uploads/${req.file.filename}`;
-  else if (image) data.image = image;
+  const input = req.file?.buffer || (image ? await fetchImage(image) : null);
+  if (input) {
+    const filename = await saveCompressedImage(input, req.file?.originalname || title);
+    data.image = `/uploads/${filename}`;
+  }
 
   const item = await prisma.gallery.update({ where: { id }, data });
   res.json(item);

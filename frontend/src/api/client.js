@@ -25,10 +25,15 @@ api.interceptors.response.use(
   }
 );
 
-// Resolve image paths: local uploads -> proxied, absolute URLs untouched
+// Resolve image paths and convert Google Drive viewer links to image URLs.
 export const resolveImage = (src) => {
   if (!src) return '';
-  if (src.startsWith('http')) return src;
+  const driveFile = src.match(
+    /(?:drive\.google\.com\/(?:file\/d\/|open\?id=)|drive\.usercontent\.google\.com\/download\?id=)([a-zA-Z0-9_-]+)/i
+  );
+  if (driveFile) {
+    return `https://drive.google.com/uc?export=view&id=${encodeURIComponent(driveFile[1])}`;
+  }
   return src;
 };
 
