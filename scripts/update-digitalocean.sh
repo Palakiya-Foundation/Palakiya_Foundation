@@ -11,7 +11,6 @@ git pull --ff-only
 cd "$BACKEND_DIR"
 npm install
 npm run prisma:generate
-npm run prisma:push
 pm2 restart ngo-backend --update-env
 
 cd "$FRONTEND_DIR"

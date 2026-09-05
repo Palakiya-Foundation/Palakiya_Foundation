@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
-import api from '../api/client.js';
+import api, { resolveImage } from '../api/client.js';
 import PageHeader from '../components/PageHeader.jsx';
 import { SkeletonImage } from '../components/Skeletons.jsx';
 
@@ -89,7 +89,7 @@ const Gallery = () => {
                   className="group relative overflow-hidden rounded-2xl shadow-card aspect-[3/2]"
                 >
                   <img
-                    src={img.image}
+                    src={resolveImage(img.image)}
                     alt={img.title || 'Gallery'}
                     loading="lazy"
                     className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
@@ -137,7 +137,7 @@ const Gallery = () => {
               key={filtered[lightbox].id}
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              src={filtered[lightbox].image}
+              src={resolveImage(filtered[lightbox].image)}
               alt={filtered[lightbox].title || 'Gallery'}
               className="max-h-[85vh] max-w-[90vw] rounded-2xl object-contain shadow-2xl"
               onClick={(e) => e.stopPropagation()}

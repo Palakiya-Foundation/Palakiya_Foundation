@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Pencil, Trash2, Star, ImageOff } from 'lucide-react';
-import api from '../../api/client.js';
+import api, { resolveImage } from '../../api/client.js';
 import { useContent } from '../../context/ContentContext.jsx';
 import PageTitle from '../../components/admin/PageTitle.jsx';
 import Modal from '../../components/admin/Modal.jsx';
@@ -119,7 +119,7 @@ const ManagePrograms = () => {
             <div key={p.id} className="card overflow-hidden">
               <div className="relative h-36">
                 {p.image ? (
-                  <img src={p.image} alt={p.title} className="h-full w-full object-cover" />
+                  <img src={resolveImage(p.image)} alt={p.title} className="h-full w-full object-cover" />
                 ) : (
                   <div className="flex h-full items-center justify-center bg-ink-50 text-ink-300">
                     <ImageOff size={28} />

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, CheckCircle2, ArrowRight } from 'lucide-react';
-import api from '../api/client.js';
+import api, { resolveImage } from '../api/client.js';
 import DynamicIcon from '../components/DynamicIcon.jsx';
 import CTASection from '../components/CTASection.jsx';
 import Reveal from '../components/Reveal.jsx';
@@ -83,7 +83,7 @@ const ProgramDetail = () => {
           {program.image && (
             <Reveal>
               <img
-                src={program.image}
+                src={resolveImage(program.image)}
                 alt={program.title}
                 className="h-[28rem] w-full rounded-3xl object-cover shadow-soft"
               />
@@ -134,7 +134,7 @@ const ProgramDetail = () => {
                 >
                   {p.image && (
                     <img
-                      src={p.image}
+                      src={resolveImage(p.image)}
                       alt={p.title}
                       className="h-40 w-full object-cover transition group-hover:scale-105"
                     />

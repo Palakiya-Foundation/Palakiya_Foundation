@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Pencil, Trash2, ImageOff, Plus } from 'lucide-react';
-import api from '../../api/client.js';
+import api, { resolveImage } from '../../api/client.js';
 import PageTitle from '../../components/admin/PageTitle.jsx';
 import Modal from '../../components/admin/Modal.jsx';
 import ConfirmDialog from '../../components/admin/ConfirmDialog.jsx';
@@ -122,7 +122,7 @@ const ManageAuthors = () => {
             <div key={a.id} className="flex items-center gap-4 p-4">
               <div className="h-16 w-20 shrink-0 overflow-hidden rounded-lg bg-ink-50">
                 {a.photo ? (
-                  <img src={a.photo} alt={a.name} className="h-full w-full object-cover" />
+                  <img src={resolveImage(a.photo)} alt={a.name} className="h-full w-full object-cover" />
                 ) : (
                   <div className="flex h-full items-center justify-center text-ink-300">
                     <ImageOff size={20} />

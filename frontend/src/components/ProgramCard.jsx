@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
+import { resolveImage } from '../api/client.js';
 import DynamicIcon from './DynamicIcon.jsx';
 
 const ProgramCard = ({ program }) => (
@@ -10,7 +11,7 @@ const ProgramCard = ({ program }) => (
     <div className="relative h-48 overflow-hidden">
       {program.image ? (
         <img
-          src={program.image}
+          src={resolveImage(program.image)}
           alt={program.title}
           loading="lazy"
           className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"

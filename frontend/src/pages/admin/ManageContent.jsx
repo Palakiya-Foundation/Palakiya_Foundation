@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Save, Quote, Trash2, Pencil, Plus, ImageOff } from 'lucide-react';
-import api from '../../api/client.js';
+import api, { resolveImage } from '../../api/client.js';
 import { useContent } from '../../context/ContentContext.jsx';
 import PageTitle from '../../components/admin/PageTitle.jsx';
 import { useToast } from '../../components/admin/Toast.jsx';
@@ -255,7 +255,7 @@ const ManageTestimonialsSection = () => {
                       <div className="flex items-center gap-3">
                         {t.image ? (
                           <img
-                            src={t.image}
+                            src={resolveImage(t.image)}
                             alt={t.name}
                             className="h-11 w-11 rounded-full object-cover ring-1 ring-ink-100"
                           />
@@ -496,8 +496,8 @@ const ManageContent = () => {
                             <div key={f.key} className="group relative overflow-hidden rounded-2xl border border-ink-200 bg-white shadow-sm">
                               <div className="aspect-[4/3] overflow-hidden bg-ink-100">
                                 {form[f.key] ? (
-                                  <img
-                                    src={form[f.key]}
+                                   <img
+                                     src={resolveImage(form[f.key])}
                                     alt={f.label}
                                     className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
                                     onError={(e) => { e.target.style.display = 'none'; }}
@@ -529,8 +529,8 @@ const ManageContent = () => {
                       <div key={f.key} className="group relative overflow-hidden rounded-2xl border border-ink-200 bg-white shadow-sm">
                         <div className="aspect-[4/3] overflow-hidden bg-ink-100">
                           {form[f.key] ? (
-                            <img
-                              src={form[f.key]}
+                             <img
+                               src={resolveImage(form[f.key])}
                               alt={f.label}
                               className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
                               onError={(e) => { e.target.style.display = 'none'; }}

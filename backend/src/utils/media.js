@@ -1,4 +1,15 @@
+import { fetchImage, saveCompressedImage } from './imageProcessor.js';
+
 const isUploadPath = (value) => value.startsWith('/uploads/');
+
+const isGoogleDriveUrl = (value) => {
+  try {
+    const host = new URL(value).hostname.toLowerCase();
+    return ['drive.google.com', 'drive.usercontent.google.com'].includes(host);
+  } catch {
+    return false;
+  }
+};
 
 export const resolveImageValue = (req, field = 'image', file = req.file) => {
   if (file) return `/uploads/${file.filename}`;
@@ -25,4 +36,13 @@ export const resolveImageValue = (req, field = 'image', file = req.file) => {
   }
 
   return trimmed;
+};
+
+export const resolveImageAsset = async (req, field = 'image', file = req.file, originalName = field) => {
+  const value = resolveImageValue(req, field, file);
+  if (!value || !isGoogleDriveUrl(value)) return value;
+
+  const input = await fetchImage(value);
+  const filename = await saveCompressedImage(input, originalName);
+  return `/uploads/${filename}`;
 };

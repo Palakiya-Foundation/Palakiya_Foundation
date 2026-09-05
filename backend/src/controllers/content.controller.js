@@ -1,6 +1,6 @@
 import prisma from '../config/prisma.js';
 import asyncHandler from '../utils/asyncHandler.js';
-import { resolveImageValue } from '../utils/media.js';
+import { resolveImageAsset } from '../utils/media.js';
 
 const imageKeys = [
   'hero_img_1', 'hero_img_2', 'hero_img_3', 'hero_img_4',
@@ -59,15 +59,15 @@ export const getContent = asyncHandler(async (req, res) => {
 // PUT /api/content  (admin) -> bulk upsert from body object
 export const updateContent = asyncHandler(async (req, res) => {
   const entries = Object.entries(req.body || {});
-  imageKeys.forEach((key) => {
+  for (const key of imageKeys) {
     const file = req.files?.[key]?.[0];
-    const value = resolveImageValue(req, key, file);
+    const value = await resolveImageAsset(req, key, file, key);
     if (value !== undefined) {
       const existing = entries.findIndex(([entryKey]) => entryKey === key);
       if (existing >= 0) entries[existing] = [key, value];
       else entries.push([key, value]);
     }
-  });
+  }
   if (entries.length === 0) {
     return res.status(400).json({ message: 'No content provided' });
   }

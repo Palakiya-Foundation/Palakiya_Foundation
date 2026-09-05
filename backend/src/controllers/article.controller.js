@@ -2,7 +2,7 @@ import { validationResult } from 'express-validator';
 import prisma from '../config/prisma.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import { uniqueSlug } from '../utils/slug.js';
-import { resolveImageValue } from '../utils/media.js';
+import { resolveImageAsset } from '../utils/media.js';
 
 const validate = (req, res) => {
   const errors = validationResult(req);
@@ -78,7 +78,7 @@ export const createArticle = asyncHandler(async (req, res) => {
     }
     return [];
   })();
-  const imageValue = resolveImageValue(req, 'image');
+  const imageValue = await resolveImageAsset(req, 'image', req.file, title);
 
   const slug = await uniqueSlug(prisma.article, title);
 
@@ -159,7 +159,7 @@ export const updateArticle = asyncHandler(async (req, res) => {
     data.slug = await uniqueSlug(prisma.article, title, id);
   }
 
-  const imageValue = resolveImageValue(req, 'image');
+  const imageValue = await resolveImageAsset(req, 'image', req.file, title || existing.title);
   if (imageValue !== undefined) data.image = imageValue;
 
   // Allow clearing the field by sending empty string

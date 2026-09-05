@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Calendar, ArrowUpRight } from 'lucide-react';
+import { resolveImage } from '../api/client.js';
 
 const formatDate = (d) =>
   new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
@@ -9,7 +10,7 @@ const ArticleCard = ({ article }) => (
     <div className="relative h-52 overflow-hidden">
       {article.image ? (
         <img
-          src={article.image}
+          src={resolveImage(article.image)}
           alt={article.title}
           loading="lazy"
           className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"

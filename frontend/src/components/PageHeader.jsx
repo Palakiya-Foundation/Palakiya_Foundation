@@ -1,4 +1,5 @@
 import { useContent } from '../context/ContentContext.jsx';
+import { resolveImage } from '../api/client.js';
 import { useTheme } from '../context/ThemeContext.jsx';
 import Reveal from './Reveal.jsx';
 
@@ -6,7 +7,7 @@ import Reveal from './Reveal.jsx';
 const PageHeader = ({ eyebrow, title, subtitle }) => {
   const { content } = useContent();
   const { theme } = useTheme();
-  const heroBackgroundImage = content?.hero_img_1 || 'https://images.unsplash.com/photo-1593113630400-ea4288922497?auto=format&fit=crop&w=1600&q=70';
+  const heroBackgroundImage = resolveImage(content?.hero_img_1 || 'https://images.unsplash.com/photo-1593113630400-ea4288922497?auto=format&fit=crop&w=1600&q=70');
   const heroBackgroundStyle = {
     backgroundImage:
       theme === 'dark'

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Pencil, Trash2, ImageOff, Eye, EyeOff, User } from 'lucide-react';
 
 
-import api from '../../api/client.js';
+import api, { resolveImage } from '../../api/client.js';
 import PageTitle from '../../components/admin/PageTitle.jsx';
 import Modal from '../../components/admin/Modal.jsx';
 import ConfirmDialog from '../../components/admin/ConfirmDialog.jsx';
@@ -162,7 +162,7 @@ const ManageReports = () => {
             <div key={r.id} className="flex items-center gap-4 p-4">
               <div className="h-16 w-20 shrink-0 overflow-hidden rounded-lg bg-ink-50">
                 {r.image ? (
-                  <img src={r.image} alt={r.title} className="h-full w-full object-cover" />
+                  <img src={resolveImage(r.image)} alt={r.title} className="h-full w-full object-cover" />
                 ) : (
                   <div className="flex h-full items-center justify-center text-ink-300">
                     <ImageOff size={20} />

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Plus, Pencil, Trash2, Users, ImageOff } from 'lucide-react';
-import api from '../../api/client.js';
+import api, { resolveImage } from '../../api/client.js';
 import PageTitle from '../../components/admin/PageTitle.jsx';
 import { useToast } from '../../components/admin/Toast.jsx';
 import Modal from '../../components/admin/Modal.jsx';
@@ -109,7 +109,7 @@ const ManageTeam = () => {
             <div key={m.id} className="card overflow-hidden">
               <div className="aspect-[4/3] overflow-hidden bg-ink-100">
                 {m.image ? (
-                  <img src={m.image} alt={m.name} className="h-full w-full object-cover" />
+                  <img src={resolveImage(m.image)} alt={m.name} className="h-full w-full object-cover" />
                 ) : (
                   <div className="flex h-full items-center justify-center">
                     <ImageOff size={32} className="text-ink-300" />

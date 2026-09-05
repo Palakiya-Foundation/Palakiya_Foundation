@@ -1,17 +1,19 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, HandHeart } from 'lucide-react';
 import { useContent } from '../context/ContentContext.jsx';
+import { resolveImage } from '../api/client.js';
 import { useTheme } from '../context/ThemeContext.jsx';
 import Reveal from './Reveal.jsx';
 
 const CTASection = () => {
   const { content } = useContent();
   const { theme } = useTheme();
+  const ctaImage = resolveImage(content?.hero_img_4 || 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=1600&q=70');
   const ctaBackgroundStyle = {
     backgroundImage:
       theme === 'dark'
-        ? `linear-gradient(to bottom, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.94)), url(${content?.hero_img_4 || 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=1600&q=70'})`
-        : `linear-gradient(to bottom, rgba(255, 255, 255, 0.82), rgba(240, 253, 244, 0.9)), url(${content?.hero_img_4 || 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=1600&q=70'})`,
+        ? `linear-gradient(to bottom, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.94)), url(${ctaImage})`
+        : `linear-gradient(to bottom, rgba(255, 255, 255, 0.82), rgba(240, 253, 244, 0.9)), url(${ctaImage})`,
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',

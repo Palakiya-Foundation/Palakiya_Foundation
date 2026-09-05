@@ -1,6 +1,6 @@
 import prisma from '../config/prisma.js';
 import asyncHandler from '../utils/asyncHandler.js';
-import { resolveImageValue } from '../utils/media.js';
+import { resolveImageAsset } from '../utils/media.js';
 
 // GET /api/testimonials
 export const getTestimonials = asyncHandler(async (req, res) => {
@@ -13,7 +13,7 @@ export const getTestimonials = asyncHandler(async (req, res) => {
 // POST /api/testimonials (admin)
 export const createTestimonial = asyncHandler(async (req, res) => {
   const { name, role, quote, order, image } = req.body;
-  const imageValue = resolveImageValue(req, 'image');
+  const imageValue = await resolveImageAsset(req, 'image', req.file, name);
   if (!name || !quote) {
     return res.status(400).json({ message: 'Name and quote are required' });
   }
@@ -35,7 +35,7 @@ export const updateTestimonial = asyncHandler(async (req, res) => {
   const { name, role, quote, order, image } = req.body;
   const data = { name, role, quote };
   if (order !== undefined) data.order = Number(order);
-  const imageValue = resolveImageValue(req, 'image');
+  const imageValue = await resolveImageAsset(req, 'image', req.file, name || 'testimonial');
   if (imageValue !== undefined) data.image = imageValue;
 
   const item = await prisma.testimonial.update({ where: { id }, data });

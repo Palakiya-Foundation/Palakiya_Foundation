@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Target, Eye, Award, Heart, Users2, Sprout, ArrowRight, ImageOff } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import api from '../api/client.js';
+import api, { resolveImage } from '../api/client.js';
 import { useContent } from '../context/ContentContext.jsx';
 import { useTheme } from '../context/ThemeContext.jsx';
 import PageHeader from '../components/PageHeader.jsx';
@@ -24,7 +24,7 @@ const About = () => {
   }, []);
 
   const getSectionBackgroundStyle = (imageKey, fallback) => {
-    const image = content?.[imageKey] || fallback;
+    const image = resolveImage(content?.[imageKey] || fallback);
     return {
       backgroundImage:
         theme === 'dark'
@@ -52,7 +52,7 @@ const About = () => {
         <div className="container-x grid items-center gap-12 lg:grid-cols-2">
           <Reveal>
             <img
-              src={content.about_page_image || 'https://images.unsplash.com/photo-1542810634-71277d95dcbb?auto=format&fit=crop&w=900&q=80'}
+              src={resolveImage(content.about_page_image || 'https://images.unsplash.com/photo-1542810634-71277d95dcbb?auto=format&fit=crop&w=900&q=80')}
               alt="Our journey"
               className="rounded-3xl object-cover shadow-soft"
             />
@@ -158,7 +158,7 @@ const About = () => {
                     <div className="relative h-72 overflow-hidden bg-ink-100">
                       {m.image ? (
                         <img
-                          src={m.image}
+                          src={resolveImage(m.image)}
                           alt={m.name}
                           className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                         />

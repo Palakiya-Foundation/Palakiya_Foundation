@@ -2,7 +2,7 @@ import { validationResult } from 'express-validator';
 import prisma from '../config/prisma.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import { uniqueSlug } from '../utils/slug.js';
-import { resolveImageValue } from '../utils/media.js';
+import { resolveImageAsset } from '../utils/media.js';
 
 const validate = (req, res) => {
   const errors = validationResult(req);
@@ -73,7 +73,7 @@ export const createReport = asyncHandler(async (req, res) => {
     }
     return [];
   })();
-  const imageValue = resolveImageValue(req, 'image');
+  const imageValue = await resolveImageAsset(req, 'image', req.file, title);
 
   const slug = await uniqueSlug(prisma.report, title);
 
@@ -151,7 +151,7 @@ export const updateReport = asyncHandler(async (req, res) => {
     data.slug = await uniqueSlug(prisma.report, title, id);
   }
 
-  const imageValue = resolveImageValue(req, 'image');
+  const imageValue = await resolveImageAsset(req, 'image', req.file, title || existing.title);
   if (imageValue !== undefined) data.image = imageValue;
 
   if (driveLink !== undefined) data.driveLink = driveLink || null;

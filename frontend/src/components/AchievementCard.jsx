@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { Calendar, Trophy } from 'lucide-react';
+import { resolveImage } from '../api/client.js';
 
 const formatDate = (d) =>
   new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
@@ -15,7 +16,7 @@ const AchievementCard = ({ achievement, index = 0 }) => (
     <div className="relative h-48 overflow-hidden">
       {achievement.image ? (
         <img
-          src={achievement.image}
+          src={resolveImage(achievement.image)}
           alt={achievement.title}
           loading="lazy"
           className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"

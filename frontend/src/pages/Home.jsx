@@ -12,7 +12,7 @@ import {
   Trophy,
   HandHeart,
 } from 'lucide-react';
-import api from '../api/client.js';
+import api, { resolveImage } from '../api/client.js';
 import { useContent } from '../context/ContentContext.jsx';
 import { useTheme } from '../context/ThemeContext.jsx';
 import Reveal from '../components/Reveal.jsx';
@@ -63,7 +63,7 @@ const Home = () => {
   ];
 
   const getSectionBackgroundStyle = (imageKey, fallback) => {
-    const image = content?.[imageKey] || fallback;
+    const image = resolveImage(content?.[imageKey] || fallback);
     return {
       backgroundImage:
         theme === 'dark'
@@ -148,7 +148,7 @@ const Home = () => {
                 ].map((src, i) => (
                   <img
                     key={i}
-                    src={src}
+                    src={resolveImage(src)}
                     alt="Volunteer"
                     className="h-10 w-10 rounded-full border-2 border-white object-cover"
                   />
@@ -177,24 +177,24 @@ const Home = () => {
             <div className="relative grid grid-cols-2 gap-4">
               <div className="space-y-4">
                 <img
-                  src={content.hero_img_1 || 'https://images.unsplash.com/photo-1593113630400-ea4288922497?auto=format&fit=crop&w=600&q=80'}
+                  src={resolveImage(content.hero_img_1 || 'https://images.unsplash.com/photo-1593113630400-ea4288922497?auto=format&fit=crop&w=600&q=80')}
                   alt="Community"
                   className="h-48 w-full rounded-2xl object-cover shadow-card sm:h-56"
                 />
                 <img
-                  src={content.hero_img_2 || 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=600&q=80'}
+                  src={resolveImage(content.hero_img_2 || 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=600&q=80')}
                   alt="Women empowerment"
                   className="h-36 w-full rounded-2xl object-cover shadow-card"
                 />
               </div>
               <div className="space-y-4 pt-8">
                 <img
-                  src={content.hero_img_3 || 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=600&q=80'}
+                  src={resolveImage(content.hero_img_3 || 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=600&q=80')}
                   alt="Education"
                   className="h-36 w-full rounded-2xl object-cover shadow-card"
                 />
                 <img
-                  src={content.hero_img_4 || 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=600&q=80'}
+                  src={resolveImage(content.hero_img_4 || 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=600&q=80')}
                   alt="Health"
                   className="h-48 w-full rounded-2xl object-cover shadow-card sm:h-56"
                 />
@@ -243,7 +243,7 @@ const Home = () => {
           <Reveal>
             <div className="relative">
               <img
-                src={content.home_intro_image || 'https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?auto=format&fit=crop&w=900&q=80'}
+                src={resolveImage(content.home_intro_image || 'https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?auto=format&fit=crop&w=900&q=80')}
                 alt="Our work"
                 className="rounded-3xl object-cover shadow-soft"
               />
@@ -329,7 +329,7 @@ const Home = () => {
                     <figcaption className="mt-6 flex items-center gap-3 border-t border-ink-100 pt-5">
                       {t.image ? (
                         <img
-                          src={t.image}
+                          src={resolveImage(t.image)}
                           alt={t.name}
                           className="h-11 w-11 rounded-full object-cover"
                         />
@@ -434,12 +434,12 @@ const Home = () => {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <img
-                  src={content.join_us_img_1 || 'https://images.unsplash.com/photo-1542810634-71277d95dcbb?auto=format&fit=crop&w=600&q=80'}
+                  src={resolveImage(content.join_us_img_1 || 'https://images.unsplash.com/photo-1542810634-71277d95dcbb?auto=format&fit=crop&w=600&q=80')}
                   alt="Volunteers at work"
                   className="h-44 w-full rounded-2xl object-cover sm:h-56"
                 />
                 <img
-                  src={content.join_us_img_2 || 'https://images.unsplash.com/photo-1593113598332-cd288d649433?auto=format&fit=crop&w=600&q=80'}
+                  src={resolveImage(content.join_us_img_2 || 'https://images.unsplash.com/photo-1593113598332-cd288d649433?auto=format&fit=crop&w=600&q=80')}
                   alt="Community gathering"
                   className="mt-6 h-44 w-full rounded-2xl object-cover sm:h-56"
                 />

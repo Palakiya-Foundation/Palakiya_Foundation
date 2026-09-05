@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Calendar, User, Tag } from 'lucide-react';
-import api from '../api/client.js';
+import api, { resolveImage } from '../api/client.js';
 import ReportCard from '../components/ReportCard.jsx';
 import Reveal from '../components/Reveal.jsx';
 import Modal from '../components/admin/Modal.jsx';
@@ -85,7 +85,7 @@ const ReportDetail = () => {
             <div className="flex items-start gap-4">
               {selectedAuthor.photo ? (
                 <img
-                  src={selectedAuthor.photo}
+                  src={resolveImage(selectedAuthor.photo)}
                   alt={selectedAuthor.name}
                   className="h-24 w-24 shrink-0 rounded-full object-cover shadow-soft"
                 />
@@ -121,7 +121,7 @@ const ReportDetail = () => {
                       <div key={a.id} className="flex gap-3 rounded-xl border border-ink-100 bg-white p-3">
                         <div className="h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-ink-50">
                           {a.image ? (
-                            <img src={a.image} alt={a.title} className="h-full w-full object-cover" />
+                            <img src={resolveImage(a.image)} alt={a.title} className="h-full w-full object-cover" />
                           ) : (
                             <div className="flex h-full w-full items-center justify-center text-ink-300">—</div>
                           )}
@@ -226,7 +226,7 @@ const ReportDetail = () => {
           <div className="container-x mt-8 max-w-4xl">
             <Reveal>
               <img
-                src={report.image}
+                src={resolveImage(report.image)}
                 alt={report.title}
                 className="h-[26rem] w-full rounded-3xl object-cover shadow-soft"
               />

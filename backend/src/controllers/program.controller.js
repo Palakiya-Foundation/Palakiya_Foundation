@@ -2,7 +2,7 @@ import { validationResult } from 'express-validator';
 import prisma from '../config/prisma.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import { uniqueSlug } from '../utils/slug.js';
-import { resolveImageValue } from '../utils/media.js';
+import { resolveImageAsset } from '../utils/media.js';
 
 const validate = (req, res) => {
   const errors = validationResult(req);
@@ -39,7 +39,7 @@ export const getProgram = asyncHandler(async (req, res) => {
 export const createProgram = asyncHandler(async (req, res) => {
   if (!validate(req, res)) return;
   const { title, summary, description, category, icon, featured, order, image } = req.body;
-  const imageValue = resolveImageValue(req, 'image');
+  const imageValue = await resolveImageAsset(req, 'image', req.file, title);
 
   const slug = await uniqueSlug(prisma.program, title);
   const program = await prisma.program.create({
@@ -78,7 +78,7 @@ export const updateProgram = asyncHandler(async (req, res) => {
     data.title = title;
     data.slug = await uniqueSlug(prisma.program, title, id);
   }
-  const imageValue = resolveImageValue(req, 'image');
+  const imageValue = await resolveImageAsset(req, 'image', req.file, title || existing.title);
   if (imageValue !== undefined) data.image = imageValue;
 
   const program = await prisma.program.update({ where: { id }, data });

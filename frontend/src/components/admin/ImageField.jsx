@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Upload, Link2, ImageIcon } from 'lucide-react';
+import { resolveImage } from '../../api/client.js';
 
 // Image input supporting either file upload or pasted URL.
 // Calls onChange({ file, url }) — only one will be set.
@@ -54,7 +55,7 @@ const ImageField = ({ label = 'Image', value, onChange }) => {
     setError(valid ? '' : 'Enter a valid http(s) image URL');
     selectedFileRef.current = null;
     setUrlValue(url);
-    setPreview(url);
+    setPreview(resolveImage(url));
     onChange({ file: null, url });
   };
 
@@ -111,7 +112,7 @@ const ImageField = ({ label = 'Image', value, onChange }) => {
 
       {preview ? (
         <img
-          src={preview}
+          src={resolveImage(preview)}
           alt="Preview"
           className="mt-3 h-32 w-full rounded-xl object-cover ring-1 ring-ink-100"
         />

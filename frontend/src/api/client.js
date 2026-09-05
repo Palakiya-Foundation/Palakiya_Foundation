@@ -28,11 +28,19 @@ api.interceptors.response.use(
 // Resolve image paths and convert Google Drive viewer links to image URLs.
 export const resolveImage = (src) => {
   if (!src) return '';
-  const driveFile = src.match(
-    /(?:drive\.google\.com\/(?:file\/d\/|open\?id=)|drive\.usercontent\.google\.com\/download\?id=)([a-zA-Z0-9_-]+)/i
-  );
-  if (driveFile) {
-    return `https://drive.google.com/uc?export=view&id=${encodeURIComponent(driveFile[1])}`;
+  try {
+    const parsed = new URL(src, window.location.origin);
+    const host = parsed.hostname.toLowerCase();
+    if (!['drive.google.com', 'drive.usercontent.google.com'].includes(host)) return src;
+
+    const queryId = parsed.searchParams.get('id');
+    const pathId = parsed.pathname.match(/^\/file\/d\/([a-zA-Z0-9_-]+)/i)?.[1];
+    const driveId = queryId || pathId;
+    if (driveId) {
+      return `https://drive.google.com/uc?export=view&id=${encodeURIComponent(driveId)}`;
+    }
+  } catch {
+    return src;
   }
   return src;
 };
