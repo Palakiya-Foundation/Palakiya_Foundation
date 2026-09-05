@@ -16,7 +16,7 @@ const ImageField = ({ label = 'Image', value, onChange }) => {
     setMode(value?.startsWith('http') ? 'url' : 'file');
     if (value) {
       selectedFileRef.current = null;
-      setPreview(value);
+      setPreview(resolveImage(value));
     } else if (!selectedFileRef.current) {
       setPreview('');
     }
